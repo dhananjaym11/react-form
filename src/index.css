@@ -8,5 +8,10 @@ body {
 }
 
 .container {
+  margin-bottom: 50px;
   margin-top: 50px;
+}
+
+.result {
+  border: 1px solid #333;
 }

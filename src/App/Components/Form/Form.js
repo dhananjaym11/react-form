@@ -1,15 +1,16 @@
 import React from 'react';
-
 import { Row, Col, FormGroup, Label, Input, Button } from 'reactstrap';
+
+import { conditionDefaultObj } from '../../Config/constants';
 
 class FormPage extends React.Component {
     state = {
         formName: '',
-        conditions: [{ name: '', value: '' }]
+        conditions: [{ ...conditionDefaultObj }]
     }
 
     handleChange = (event) => {
-        if (['name', 'value'].includes(event.target.name)) {
+        if (['name', 'operator', 'value'].includes(event.target.name)) {
             const conditionNameId = event.target.dataset.id;
             const updatedConditions = [...this.state.conditions];
             updatedConditions[conditionNameId][event.target.name] = event.target.value;
@@ -31,7 +32,7 @@ class FormPage extends React.Component {
                     <Row>
                         <Col sm="3">
                             <FormGroup>
-                                <Label>Condition Name</Label>
+                                <Label>Name</Label>
                                 <Input
                                     data-id={i}
                                     type="text"
@@ -42,7 +43,18 @@ class FormPage extends React.Component {
                         </Col>
                         <Col sm="3">
                             <FormGroup>
-                                <Label>Condition Value</Label>
+                                <Label>Operator</Label>
+                                <Input
+                                    data-id={i}
+                                    type="text"
+                                    value={el.operator || ''}
+                                    name="operator"
+                                    onChange={(e) => this.handleChange(e)} />
+                            </FormGroup>
+                        </Col>
+                        <Col sm="3">
+                            <FormGroup>
+                                <Label>Value</Label>
                                 <Input
                                     data-id={i}
                                     type="text"
@@ -52,18 +64,23 @@ class FormPage extends React.Component {
                             </FormGroup>
                         </Col>
                         <Col sm="3">
-                            <Button
-                                color="primary"
-                                onClick={() => this.addClick()} >
-                                Add More
-                            </Button>
-                            {!i ? null :
-                                <Button
-                                    color="danger"
-                                    onClick={() => this.removeClick(i)} >
-                                    Remove
+                            <label>&nbsp;</label>
+                            <div>
+                                {i === this.state.conditions.length - 1 &&
+                                    <Button
+                                        color="primary"
+                                        onClick={() => this.addClick()} >
+                                        Add More
                                 </Button>
-                            }
+                                }
+                                {!i ? null :
+                                    <Button
+                                        color="danger"
+                                        onClick={() => this.removeClick(i)} >
+                                        Remove
+                                </Button>
+                                }
+                            </div>
                         </Col>
                     </Row>
                 </div>
@@ -73,7 +90,9 @@ class FormPage extends React.Component {
     }
 
     addClick = () => {
-        this.setState(prevState => ({ conditions: [...prevState.conditions, { name: '', value: '' }] }))
+        this.setState(prevState => (
+            { conditions: [...prevState.conditions, { ...conditionDefaultObj }] }
+        ))
     }
 
     removeClick = (i) => {
@@ -82,7 +101,7 @@ class FormPage extends React.Component {
         this.setState({ conditions });
     }
 
-    handelSubmit = () => {
+    handleSubmit = () => {
         console.log(this.state.conditions);
     }
 
@@ -107,16 +126,27 @@ class FormPage extends React.Component {
                                         </FormGroup>
                                     </Col>
                                 </Row>
+
+                                <h3>Condition</h3>
                                 {this.createUI()}
 
                                 <Button
                                     color="primary"
-                                    onClick={this.handelSubmit} >
+                                    onClick={this.handleSubmit} >
                                     Submit
-                            </Button>
+                                </Button>
                             </form>
                         </Col>
-                        <Col sm="3">Two</Col>
+                        <Col sm="3">
+                            <h3>Result</h3>
+                            <ul className="result">
+                                {this.state.conditions.map(el => {
+                                    if (el.name && el.operator && el.value) {
+                                        return <li>{el.name} {el.operator} {el.value}</li>
+                                    }
+                                })}
+                            </ul>
+                        </Col>
                     </Row>
                 </div>
             </div>
